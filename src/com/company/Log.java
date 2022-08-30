@@ -19,30 +19,17 @@ public class Log implements Runnable {
 
     @Override
     public void run() {
-        int sleppy;
         while (viewLog) {
 
             for (int i = printMessageId; i < islandLog.size(); i++) {
-                System.out.println(islandLog.get(i));
-                printMessageId++;
-                sleppy = 0;
-                if (printMessageId == islandLog.size() - 1) {
-                    sleppy += 10;
-                    try {
-                        Thread.sleep(sleppy);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if (sleppy >= 500) {
-                        System.out.println("Работа логирования завершена");
-                        viewLog = false;
-                    }
+                synchronized (this) {
+                    System.out.println(islandLog.get(i));
                 }
+                printMessageId++;
             }
         }
         return;
     }
-
 
     public void stopLog() {
         LOG.viewLog = false;

@@ -65,22 +65,26 @@ public class Island implements Runnable {
         log.start();//        активируем лог
 
 //      создаем локации и передаем в них их индексы
-        for (int aeraX = 0; aeraX < areasCount[0]; aeraX++) { //индекс расположения локации по оси X
-            for (int aeraY = 0; aeraY < areasCount[1]; aeraY++) { //индекс расположения локации по оси Y
+        for (int areaX = 0; areaX < areasCount[0]; areaX++) { //индекс расположения локации по оси X
+            for (int areaY = 0; areaY < areasCount[1]; areaY++) { //индекс расположения локации по оси Y
                 areaId++; //индекс локации (для доступа)
-                areas.add(areaId, new Area(areaId, aeraY, aeraY)); //добавляем новую локацию в массив
+                areas.add(areaId, new Area(areaId, areaX, areaY)); //добавляем новую локацию в массив
                 areasThreds.add(new Thread(areas.get(areaId))); //добавляем локации в потоки
             }
         }
 
-//        areasThreds.get(areaId).start(); //запускаем локации в работу
-//        while (step < 3) { //считаем ходы игры от 0
-//            step++;
-//            synchronized (LOG) { //чтобы нити не мешали друг другу писать в лог
-//                //записываем соообщение в лог
-//                LOG.addToLog("Island : step "+step);
-//            }
-//
+        for (int areaId = 0; areaId < areas.size(); areaId++) {
+            String str = areas.get(areaId).getAreaName() + " : инициировано ";
+            for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++) {
+                str = str+ objectsTypesNames[objectTypeId]+" "+areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId)+"\t";
+            }
+            LOG.addToLog(str);
+        }
+        while (step < 3) { //считаем ходы игры от 0
+            step++;
+            synchronized (LOG) {//записываем соообщение в лог
+                LOG.addToLog("Island : ход имитации "+step);
+            }
 //            for (areaId = 0; areaId < (areasCount[0]*areasCount[1]); areaId++) {
 //                areasThreds.get(areaId).start();
 //                try {
@@ -89,7 +93,8 @@ public class Island implements Runnable {
 //                    e.printStackTrace();
 //                }
 //            }
-//        }
+
+        }
     }
 
     //инкремент текущего количества определенных объектов на острове по id типа объекта

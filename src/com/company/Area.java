@@ -70,15 +70,18 @@ public class Area implements Runnable {
             initialObjectsInAreaCounts[liveObjectTypeId] = ThreadLocalRandom.current().nextInt(0, objectsMaxCountsOnArea[liveObjectTypeId] + 1);
             if ((initialObjectsInAreaCounts[liveObjectTypeId]) > objectsMaxCountsOnArea[liveObjectTypeId])
                 this.initialObjectsInAreaCounts[liveObjectTypeId] = objectsMaxCountsOnArea[liveObjectTypeId];
-            for (int liveObject = 0; liveObject < initialObjectsInAreaCounts[liveObjectTypeId] - 1; liveObject++)
+            for (int liveObject = 0; liveObject < initialObjectsInAreaCounts[liveObjectTypeId] - 1; liveObject++) {
                 createNewLiveObject(liveObjectTypeId, true);
+                synchronized (LOG) {
+                    LOG.addToLog(areaName + " : создан " + objectsInArea.get(liveObjectId).getObjectName());
+                }
+            }
         }
     }
 
 
     @Override
     public void run() {
-        return;
     }
 
     //предоставление текущей популяции в локации
@@ -131,6 +134,7 @@ public class Area implements Runnable {
             return false;
         }
     }
+
     //создание нового объекта
     public void createNewLiveObject(int liveObjectTypeId, boolean initFlag) {
         if (isCreateAvaibleInArea(liveObjectTypeId)) {
@@ -139,22 +143,22 @@ public class Area implements Runnable {
             currentObjectsInAreaCounts[liveObjectTypeId]++;
             liveObjectId = objectsInArea.size();
             switch (liveObjectTypeId) {
-                case 0 -> objectsInArea.add(new Plant(areaId,liveObjectId, initFlag));
-                case 1 -> objectsInArea.add(new Wolf(areaId,liveObjectId, initFlag));
-                case 2 -> objectsInArea.add(new Boa(areaId,liveObjectId, initFlag));
-                case 3 -> objectsInArea.add(new Fox(areaId,liveObjectId, initFlag));
-                case 4 -> objectsInArea.add(new Bear(areaId,liveObjectId, initFlag));
-                case 5 -> objectsInArea.add(new Eagle(areaId,liveObjectId, initFlag));
-                case 6 -> objectsInArea.add(new Horse(areaId,liveObjectId, initFlag));
-                case 7 -> objectsInArea.add(new Deer(areaId,liveObjectId, initFlag));
-                case 8 -> objectsInArea.add(new Rabbit(areaId,liveObjectId, initFlag));
-                case 9 -> objectsInArea.add(new Mouse(areaId,liveObjectId, initFlag));
-                case 10 -> objectsInArea.add(new Goat(areaId,liveObjectId, initFlag));
-                case 11 -> objectsInArea.add(new Sheep(areaId,liveObjectId, initFlag));
-                case 12 -> objectsInArea.add(new Boar(areaId,liveObjectId, initFlag));
-                case 13 -> objectsInArea.add(new Buffalo(areaId,liveObjectId, initFlag));
-                case 14 -> objectsInArea.add(new Duck(areaId,liveObjectId, initFlag));
-                case 15 -> objectsInArea.add(new Caterpillar(areaId,liveObjectId, initFlag));
+                case 0 -> objectsInArea.add(new Plant(areaId, liveObjectId, initFlag));
+                case 1 -> objectsInArea.add(new Wolf(areaId, liveObjectId, initFlag));
+                case 2 -> objectsInArea.add(new Boa(areaId, liveObjectId, initFlag));
+                case 3 -> objectsInArea.add(new Fox(areaId, liveObjectId, initFlag));
+                case 4 -> objectsInArea.add(new Bear(areaId, liveObjectId, initFlag));
+                case 5 -> objectsInArea.add(new Eagle(areaId, liveObjectId, initFlag));
+                case 6 -> objectsInArea.add(new Horse(areaId, liveObjectId, initFlag));
+                case 7 -> objectsInArea.add(new Deer(areaId, liveObjectId, initFlag));
+                case 8 -> objectsInArea.add(new Rabbit(areaId, liveObjectId, initFlag));
+                case 9 -> objectsInArea.add(new Mouse(areaId, liveObjectId, initFlag));
+                case 10 -> objectsInArea.add(new Goat(areaId, liveObjectId, initFlag));
+                case 11 -> objectsInArea.add(new Sheep(areaId, liveObjectId, initFlag));
+                case 12 -> objectsInArea.add(new Boar(areaId, liveObjectId, initFlag));
+                case 13 -> objectsInArea.add(new Buffalo(areaId, liveObjectId, initFlag));
+                case 14 -> objectsInArea.add(new Duck(areaId, liveObjectId, initFlag));
+                case 15 -> objectsInArea.add(new Caterpillar(areaId, liveObjectId, initFlag));
             }
             objectsThreadsInArea.add(new Thread(objectsInArea.get(liveObjectId)));
         }

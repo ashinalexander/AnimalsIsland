@@ -36,7 +36,7 @@ public abstract class LiveObject implements Runnable {
     //флаг инициализации (выставляется при создании объекта)
     boolean initFlag;
 
-    public LiveObject(int areaId, int currentAreaId, boolean initFlag) {
+    public LiveObject(int areaId, int currentliveObjectId, boolean initFlag) {
         //идентификатор типа объекта (животного или растения)
         this.liveObjectTypeId = CONFIG.getLiveObjectTypeId(this.getClass().getSimpleName());
         //наименование типа объекта (животного или растения)
@@ -74,10 +74,6 @@ public abstract class LiveObject implements Runnable {
                     nextInt(0, CONFIG.getBreedingPeriod(this.liveObjectTypeId) + 1);
         else
             this.currentBreedingPeriod = 0;
-        synchronized (LOG) { //чтобы нити не мешали друг другу писать в лог
-            //записываем соообщение в лог
-            LOG.addToLog(objectName + " : создан");
-        }
     }
 
     @Override
@@ -110,5 +106,7 @@ public abstract class LiveObject implements Runnable {
         return currentLiveObjectId;
     }
 
-
+    public String getObjectName() {
+        return objectName;
+    }
 }

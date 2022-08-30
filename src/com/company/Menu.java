@@ -144,6 +144,7 @@ public class Menu {
                     choiceMenu(splitChoise[0], thisChoise);
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
+                        case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
                     }
                 }
                 case 2 -> {
