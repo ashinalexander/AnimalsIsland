@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.company.Config.CONFIG;
 import static com.company.Island.ISLAND;
 import static com.company.Log.LOG;
+import static java.lang.Thread.sleep;
 
 public class Area implements Runnable {
     // индекс локации (для доступа)
@@ -31,7 +32,10 @@ public class Area implements Runnable {
     private String[] objectsTypesNames;
     //колличество видов объектов на острове
     private int liveObjectsCount;
-    boolean initFlag;
+    //флаг продолжения работы - следующий шаг
+    private boolean areaNextStep;
+    //флаг остановки потока локации
+    private boolean isShutdown;
 
     Area(int areaId, int areaX, int areaY) {
         // индекс локации (для доступа)
@@ -58,6 +62,10 @@ public class Area implements Runnable {
         this.liveObjectId = -1;
         //наименование типов животных и растений
         this.objectsTypesNames = CONFIG.getObjectsTypesNames();
+        //флаг продолжения работы - следующий шаг
+        areaNextStep = false;
+        //флаг остановки потока локации
+        isShutdown = false;
 
         //записываем соообщение о создании локации
 //        synchronized (LOG) {
@@ -81,11 +89,36 @@ public class Area implements Runnable {
 
     @Override
     public void run() {
-//        LOG.addToLog("какая-то фигня");
-        synchronized (this) {
-            ISLAND.appendFinishedAreas();
-        }
+        //завершаем поток по команде от Island
+//         while(!isShutdown){
+             LOG.addToLog("что-то делаем");
+
+
+
+             //выполнения всех действий итерации отчитываемся перед Island
+             ISLAND.appendFinishedAreas();
+             // ожидаем обратную связь с Island
+//             while(!areaNextStep){
+//
+//                 try {
+//                     Thread.sleep(100);
+//                 } catch (InterruptedException e) {
+//                     e.printStackTrace();
+//                 }
+                 //кавершаем поток по команде от Island
+//
+//             }
+//
+//         }
     }
+
+//    public boolean shutdown() {
+//        return isShutdown=true;
+//    }
+//
+//    public boolean isAreaNextStep() {
+//        return areaNextStep = true;
+//    }
 
     //предоставление текущей популяции в локации
     //используется для проверок при создании нового объекта или перемещении
@@ -130,10 +163,8 @@ public class Area implements Runnable {
         if ((currentObjectsInAreaCounts[liveObjectTyepId] + 1) <= objectsMaxCountsOnArea[liveObjectTyepId])
             return true;
         else {
-            synchronized (LOG) { //чтобы нити не мешали друг другу писать в лог
-                //записываем соообщение в лог
-                LOG.addToLog(areaName + " : достигнута максимальная популяция " + CONFIG.getObjectTypeName(liveObjectTyepId) + " в локации");
-            }
+            //записываем соообщение в лог
+            LOG.addToLog(areaName + " : достигнута максимальная популяция " + CONFIG.getObjectTypeName(liveObjectTyepId) + " в локации");
             return false;
         }
     }

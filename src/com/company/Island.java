@@ -113,7 +113,7 @@ public class Island implements Runnable {
                 currentObjectsTotalCounts[objectTypeId] = areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
 
         //выводим ход имитации
-        LOG.addToLog("Ход имитации " + currentStep);
+        LOG.addToLog("НАЧАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ");
 
         //собираем статистику по острову в строку и выводим на экран (на этапе инициализации)
         islandStat = "Island\t\t:";
@@ -135,7 +135,7 @@ public class Island implements Runnable {
         //если установлен, то присваеваем переменной условия выхода значение из конфигурации
         if (stopIslandFlags[0]) exitStep = finalStep;
         else exitStep = step + 1;
-        while (step <= exitStep) {
+        while (step < exitStep) {
             finishedAreas = 0; //каждый ход значение обнуляется и набирается заново из Areas
             for (areaId = 0; areaId < areasTotalCount; areaId++) {
                 aThreads.submit(areas.get(areaId)); //распараллеливаем локации
@@ -150,7 +150,6 @@ public class Island implements Runnable {
                     e.printStackTrace();
                 }
             }
-            System.out.println("Прошли");
             //собираем статистику по острову на основе статистик локаций (на этапе инициализации)
             for (int areaId = 0; areaId < areasTotalCount; areaId++)
                 for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++)
@@ -168,7 +167,7 @@ public class Island implements Runnable {
             }
 
             //выводим ход имитации
-            LOG.addToLog("Ход имитации " + currentStep);
+            LOG.addToLog("ХОД ИМИТАЦИИ " + currentStep);
 
             //собираем статистику по острову в строку и выводим на экран (в конце каждого шага)
             islandStat = "Island\t\t:";
@@ -185,12 +184,9 @@ public class Island implements Runnable {
                 LOG.addToLog(areasStat);
             }
 
-            //завершаем работу всех фабрик локаций
-//            for (int areaId = 0; areaId < areasTotalCount; areaId++)
-//                areas.get(areaId).oThreads.shutdownNow();
-            //завершаем работу фабрик острова
-            aThreads.shutdownNow();
         }
+        //завершаем работу фабрик острова
+        aThreads.shutdownNow();
         //завершаем работу лога
         LOG.shutdown();
     }
