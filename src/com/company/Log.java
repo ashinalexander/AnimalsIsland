@@ -31,7 +31,7 @@ public class Log implements Runnable {
         return;
     }
 
-    public void stopLog() {
+    public void shutdown() {
         LOG.viewLog = false;
     }
 

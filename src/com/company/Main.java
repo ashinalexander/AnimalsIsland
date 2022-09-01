@@ -8,12 +8,10 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Config.loadConfig(); //загрузка конфига из файла
-
 //        Config config = Config.getInstance(); //получение конфига по умолчанию
+//        Config.CONFIG.saveConfig(); //сохранение измненного дефолта в файл
+        Config.loadConfig(); //загрузка конфига из файла
         Menu menu = new Menu();
-        Config.CONFIG.saveConfig(); //сохранение измненного дефолта в файл
-
         Thread island = new Thread(Island.getInstance()); //создаем поток острова и сам остров
         island.start(); //активируем работу острова
         try {

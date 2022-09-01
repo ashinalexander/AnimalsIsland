@@ -15,11 +15,13 @@ public class Config implements Serializable {
     public static Config getInstance() {
         return CONFIG;
     } // создание объекта через метод, возвращающий константу
-
+    //флаги остановки программы [определенное количество шагов, вымирание животных]
+    private boolean[] stopOptions = {true, false};
+    //шаг после прохождения которого программа будет остановлена
+    private int finalStep = 3;
     //префикс имени локации
     private String areaNamePrefix = "Area";
-    private int areasCount[] = {2, 2}; //колличество локаций на острове
-//    private int areasCount[] = {100, 20}; //колличество локаций на острове
+    private int areasCount[] = {100, 20}; //колличество локаций на острове
 
     // типы объектов животных и растений
     private String[] liveObjectsTypes = {"Plant", "Wolf", "Boa", "Fox", "Bear", "Eagle", "Horse", "Deer",
@@ -27,9 +29,9 @@ public class Config implements Serializable {
     // наименования титипов объектов животных и растений
     private String[] objectsTypesNames = {"Растениe", "Волк", "Удав", "Лиса", "Медведь", "Орел",
             "Лошадь", "Олень", "Кролик", "Мышь", "Коза", "Овца", "Кабан", "Буйвол", "Утка", "Гусеница"};
+    //изображения титипов объектов животных и растений в псевдографике
     private String[] objectsTypesPsevdographic = {"\uD83C\uDF31", "\uD83D\uDC3A", "\uD83D\uDC0D", "\uD83E\uDD8A", "\uD83D\uDC3B", "\uD83E\uDD85",
             "\uD83D\uDC0E", "\uD83E\uDD8C", "\uD83D\uDC07", "\uD83D\uDC01", "\uD83D\uDC10", "\uD83D\uDC11", "\uD83D\uDC17", "\uD83D\uDC03", "\uD83E\uDD86", "\uD83D\uDC1B"};
-
     // веса животных и растений
     private double[] weights = {1, 50, 15, 8, 500, 6, 400, 300, 2, 0.05, 60, 70, 400, 700, 1, 0.01};
     // максимального количества каждого типа в локации
@@ -225,6 +227,24 @@ public class Config implements Serializable {
         this.objectsTypesNames = this.objectsTypesPsevdographic;
     }
 
+    public boolean[] getStopOptions() {
+        return stopOptions;
+    }
+    public void setStopCountFlag(boolean stopCountFlag) {
+        this.stopOptions[0] = stopCountFlag;
+    }
+    public void setAllDiedFlag(boolean allDiedFlag) {
+        this.stopOptions[1] = allDiedFlag;
+    }
+
+    public int getFinalStep() {
+        return finalStep;
+    }
+
+    public void setFinalStep(int finalStep) {
+        this.finalStep = finalStep;
+    }
+
     public void saveConfig() {
         //переменные исходящего потока для сериализации
         FileOutputStream fos = null;
@@ -262,6 +282,8 @@ public class Config implements Serializable {
                 System.out.println("Класс конфигурации не найден");
             }
             CONFIG.areasCount = config.areasCount;
+            CONFIG.stopOptions = config.stopOptions;
+            CONFIG.finalStep = config.finalStep;
 //            CONFIG.objectsMaxCountsOnIsland = config.objectsMaxCountsOnIsland;
             CONFIG.liveObjectsTypes = config.liveObjectsTypes;
             CONFIG.objectsTypesNames = config.objectsTypesNames;

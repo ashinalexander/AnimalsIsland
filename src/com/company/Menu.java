@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Scanner;
 
+import static com.company.Config.*;
+
 public class Menu {
     Scanner console = new Scanner(System.in);
     String thisChoise;
@@ -21,13 +23,19 @@ public class Menu {
                 conf - меню конфигурации
                 prev - предыдущее меню
                 """);
+
         while (thisChoise.equals("main")) {
             System.out.print(thisChoise + " >");
             splitChoise = console.nextLine().split(" ");
             if (splitChoise.length == 1) {
+
                 switch (splitChoise[0]) {
-                    case "conf" -> choiceMenu("conf", thisChoise);
-                    case "prev" -> choiceMenu(prevChoise, thisChoise);
+                    case "conf" -> {
+                        choiceMenu("conf", thisChoise);
+                    }
+                    case "prev" -> {
+                        choiceMenu(prevChoise, thisChoise);
+                    }
                     case "start" -> thisChoise = "start";
                     default -> System.out.println("Команда не допустима");
                 }
@@ -49,12 +57,16 @@ public class Menu {
             System.out.print(thisChoise + " >");
             splitChoise = console.nextLine().split(" ");
             if (splitChoise.length == 1) {
+
                 choiceMenu(splitChoise[0], thisChoise);
                 switch (splitChoise[0]) {
                     case "show" -> show(thisChoise);
                     case "prev" -> choiceMenu(prevChoise, thisChoise);
-                    case "save" -> Config.CONFIG.saveConfig(); //сохранение измненного дефолта в файл
-                    default -> System.out.println("Команда не допустима");
+                    case "save" -> CONFIG.saveConfig(); //сохранение измненного дефолта в файл
+                    default -> {
+                        if (!splitChoise[0].equals("start"))
+                            System.out.println("Команда не допустима");
+                    }
                 }
             }
         }
@@ -77,14 +89,19 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
-                        default -> System.out.println("Команда не допустима");
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 3 -> {
                     switch (splitChoise[0]) {
-                        case "set" -> set(thisChoise, splitChoise[1],splitChoise[2]);
+                        case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
+                default -> System.out.println("areasCount: " + thisChoise + ": Команда не допустима");
             }
         }
     }
@@ -108,7 +125,12 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 2 -> {
                     switch (splitChoise[0]) {
@@ -120,10 +142,52 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("objectsMaxCountsOnIsland: Команда не допустима");
             }
         }
     }
+
+    public void stopOptionsMenu(String prevChoise) {
+        thisChoise = "stopOptions";
+        System.out.print(thisChoise + "\n" +
+                "show - показать все переменные \"" + thisChoise + "\"\n" +
+                "show all - показать значение всех переменных \"" + thisChoise + "\"\n" +
+                "show <variable> - показать значение переменной <variable>\n" +
+                "set <variable> <value> - изменить значение переменной <variable>\n" +
+                "prev - предыдущее меню\n" +
+                "conf - меню конфигурации\n" +
+                "main - главное меню\n");
+        while (thisChoise.equals("stopOptions")) {
+            System.out.print(thisChoise + " >");
+            splitChoise = console.nextLine().split(" ");
+            switch (splitChoise.length) {
+                case 1 -> {
+                    choiceMenu(splitChoise[0], thisChoise);
+                    switch (splitChoise[0]) {
+                        case "show" -> show(thisChoise);
+                        case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
+                    }
+
+                }
+                case 2 -> {
+                    switch (splitChoise[0]) {
+                        case "show" -> show(thisChoise, splitChoise[1]);
+                    }
+                }
+                case 3 -> {
+                    switch (splitChoise[0]) {
+                        case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
+                    }
+                }
+                default -> System.out.println("stopOptions: Команда не допустима");
+            }
+        }
+    }
+
 
     public void objectsTypesNamesMenu(String prevChoise) {
         thisChoise = "objectsTypesNames";
@@ -142,10 +206,16 @@ public class Menu {
             switch (splitChoise.length) {
                 case 1 -> {
                     choiceMenu(splitChoise[0], thisChoise);
+
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 2 -> {
                     switch (splitChoise[0]) {
@@ -159,7 +229,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("objectsTypesNames: Команда не допустима");
             }
         }
     }
@@ -183,7 +253,12 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 2 -> {
                     switch (splitChoise[0]) {
@@ -195,7 +270,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("weights: Команда не допустима");
             }
         }
     }
@@ -219,7 +294,12 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 2 -> {
                     switch (splitChoise[0]) {
@@ -231,7 +311,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("objectsMaxCountsOnArea: Команда не допустима");
             }
         }
     }
@@ -255,7 +335,12 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 2 -> {
                     switch (splitChoise[0]) {
@@ -267,7 +352,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("maxMoveSpeeds: Команда не допустима");
             }
         }
     }
@@ -291,7 +376,12 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 2 -> {
                     switch (splitChoise[0]) {
@@ -303,7 +393,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("maxFoodInAnimals: Команда не допустима");
             }
         }
     }
@@ -328,7 +418,12 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
+
                 }
                 case 2 -> {
                     switch (splitChoise[0]) {
@@ -345,7 +440,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2], splitChoise[3]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("eatingProbabilities: Команда не допустима");
             }
         }
     }
@@ -369,6 +464,10 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
                 }
                 case 2 -> {
@@ -381,7 +480,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("maxNumbersOfChilds: Команда не допустима");
             }
         }
     }
@@ -405,6 +504,10 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
                 }
                 case 2 -> {
@@ -417,7 +520,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("breedingPeriods: Команда не допустима");
             }
         }
     }
@@ -441,6 +544,10 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
                 }
                 case 2 -> {
@@ -453,7 +560,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("breedingPairFlags: Команда не допустима");
             }
         }
     }
@@ -477,6 +584,10 @@ public class Menu {
                     switch (splitChoise[0]) {
                         case "show" -> show(thisChoise);
                         case "prev" -> choiceMenu(prevChoise, thisChoise); // возврат в предыдущее меню
+                        default -> {
+                            if (!splitChoise[0].equals("start"))
+                                System.out.println("Команда не допустима");
+                        }
                     }
                 }
                 case 2 -> {
@@ -489,7 +600,7 @@ public class Menu {
                         case "set" -> set(thisChoise, splitChoise[1], splitChoise[2]);
                     }
                 }
-                default -> System.out.println("Команда не допустима");
+                default -> System.out.println("starvingsInStep: Команда не допустима");
             }
         }
     }
@@ -497,6 +608,7 @@ public class Menu {
     //метод выбора пункта меню для перехода
     public void choiceMenu(String toMenu, String fromMenu) {
         switch (toMenu) {
+            case "stopOptions" -> stopOptionsMenu(fromMenu);
             case "areasCount" -> areasCountMenu(fromMenu);
             case "objectsMaxCountsOnIsland" -> objectsMaxCountsOnIslandMenu(fromMenu);
             case "objectsTypesNames" -> objectsTypesNamesMenu(fromMenu);
@@ -511,39 +623,62 @@ public class Menu {
             case "starvingsInStep" -> starvingsInStepMenu(fromMenu);
             case "conf" -> confMenu(fromMenu);
             case "main" -> mainMenu(fromMenu);
+
         }
     }
 
     private void set(String thisChoise, String value) {
         switch (thisChoise) {
             case "objectsTypesNames" -> {
-                if (value.equals("psevdo")) Config.CONFIG.setPsevdographics();
+                if (value.equals("psevdo")) CONFIG.setPsevdographics();
             }
         }
     }
 
     private void set(String thisChoise, String variable, String value) {
-        int id = Config.CONFIG.getLiveObjectTypeId(variable);
-        if ((id > -1)||(thisChoise.equals("areasCount"))) {
+        int id = CONFIG.getLiveObjectTypeId(variable);
+        if ((id > -1) || (thisChoise.equals("areasCount")||(thisChoise.equals("stopOptions")))) {
+
             switch (thisChoise) {
                 case "areasCount" -> {
-                    int intValue1 =0;
-                    int intValue2 =0;
+                    int intValue1 = 0;
+                    int intValue2 = 0;
                     boolean flag = false;
                     if (isInt(variable)) {
                         intValue1 = Integer.parseInt(variable);
-                        if((intValue1 >= 0)&&(intValue1 <= Integer.MAX_VALUE))
-                            flag=true;
+                        if (intValue1 >= 0)
+                            flag = true;
                     }
                     if (isInt(value)) {
                         intValue2 = Integer.parseInt(value);
-                        if((intValue2 >= 0)&&(intValue2 <= Integer.MAX_VALUE))
-                            flag=true;
+                        if (intValue2 >= 0)
+                            flag = true;
                     }
-                    if(flag){
-                        Config.CONFIG.setAreasCount(intValue1, intValue2);
+                    if (flag) {
+                        CONFIG.setAreasCount(intValue1, intValue2);
                     } else
-                        System.out.println("<value> - целое число от 0 до " + Integer.MAX_VALUE);
+                        System.out.println("Поддерживаются значения от 0 до " + Integer.MAX_VALUE);
+                }
+
+                case "stopOptions" -> {
+                    switch (variable) {
+                        case "finalStep" -> {
+                            if (isInt(value)) {
+                                int intValue = Integer.parseInt(value);
+                                if (intValue >= 0) CONFIG.setFinalStep(intValue);
+                            } else System.out.println("Поддерживаются значения от 0 до " + Integer.MAX_VALUE);
+                        }
+                        case "stopCountFlag" -> {
+                            if (isBoolean(value))
+                                CONFIG.setStopCountFlag(Boolean.parseBoolean(value));
+                            else System.out.println("Поддерживаются значения \"true\" и \"false\"");
+                        }
+                        case "allDiedFlag" -> {
+                            if (isBoolean(value))
+                                CONFIG.setAllDiedFlag(Boolean.parseBoolean(value));
+                            else System.out.println("Поддерживаются значения \"true\" и \"false\"");
+                        }
+                    }
                 }
 
 //                case "objectsMaxCountsOnIsland" -> {
@@ -552,29 +687,29 @@ public class Menu {
 //                    else
 //                        System.out.println("<value> - целое число от 0 до " + Integer.MAX_VALUE);
 //                }
-                case "objectsTypesNames" -> Config.CONFIG.setObjectTypeName(id, value);
+                case "objectsTypesNames" -> CONFIG.setObjectTypeName(id, value);
 
                 case "weights" -> {
                     if (isDouble(value))
-                        Config.CONFIG.setWeight(id, Double.parseDouble(value));
+                        CONFIG.setWeight(id, Double.parseDouble(value));
                     else
                         System.out.println("<value> - число с плавающей запятой");
                 }
                 case "objectsMaxCountsOnArea" -> {
                     if (isInt(value))
-                        Config.CONFIG.setObjectMaxCountOnArea(id, Integer.parseInt(value));
+                        CONFIG.setObjectMaxCountOnArea(id, Integer.parseInt(value));
                     else
                         System.out.println("<value> - целое число от 0 до " + Integer.MAX_VALUE);
                 }
                 case "maxMoveSpeeds" -> {
                     if (isInt(value))
-                        Config.CONFIG.setMaxMoveSpeed(id, Integer.parseInt(value));
+                        CONFIG.setMaxMoveSpeed(id, Integer.parseInt(value));
                     else
                         System.out.println("<value> - целое число от 0 до " + Integer.MAX_VALUE);
                 }
                 case "maxFoodInAnimals" -> {
                     if (isDouble(value))
-                        Config.CONFIG.setMaxFoodInAnimal(id, Double.parseDouble(value));
+                        CONFIG.setMaxFoodInAnimal(id, Double.parseDouble(value));
                     else
                         System.out.println("<value> - число с плавающей запятой");
                 }
@@ -588,7 +723,7 @@ public class Menu {
                     if (isInt(value)) {
                         int intValue = Integer.parseInt(value);
                         if (intValue >= 0) {
-                            Config.CONFIG.setBreedingPeriod(id, intValue);
+                            CONFIG.setBreedingPeriod(id, intValue);
                         } else
                             System.out.println("<value> - целое положительное число");
                     }
@@ -599,9 +734,9 @@ public class Menu {
 //                    else
 //                        System.out.println("<value> - принимает значение \"true\" и \"false\"");
 //                }
-                case "starvingsInStep" ->{
+                case "starvingsInStep" -> {
                     if (isDouble(value))
-                        Config.CONFIG.setStarvingInStep(id, Double.parseDouble(value));
+                        CONFIG.setStarvingInStep(id, Double.parseDouble(value));
                     else
                         System.out.println("<value> - число с плавающей запятой");
                 }
@@ -610,15 +745,15 @@ public class Menu {
     }
 
     private void set(String thisChoise, String variable1, String variable2, String value) {
-        int id1 = Config.CONFIG.getLiveObjectTypeId(variable1);
-        int id2 = Config.CONFIG.getLiveObjectTypeId(variable2);
+        int id1 = CONFIG.getLiveObjectTypeId(variable1);
+        int id2 = CONFIG.getLiveObjectTypeId(variable2);
         if ((id1 > -1) && (id2 > -1)) {
             switch (thisChoise) {
                 case "eatingProbabilities" -> {
                     if (isInt(value)) {
                         int intValue = Integer.parseInt(value);
                         if ((intValue >= 0) && (intValue <= 100))
-                            Config.CONFIG.setEatingProbability(id1, id2, intValue);
+                            CONFIG.setEatingProbability(id1, id2, intValue);
                         else
                             System.out.println("<value> - целое число от 0 до 100");
                     }
@@ -631,67 +766,90 @@ public class Menu {
         switch (thisChoise) {
             case "conf" -> showVariables();
             case "areasCount" -> {
-                int[] values =Config.CONFIG.getAreasCount();
-                System.out.println(thisChoise + " = " + values[0] + " Х "+ values[1]);
+                int[] values = CONFIG.getAreasCount();
+                System.out.println(thisChoise + " = " + values[0] + " Х " + values[1]);
             }
+            case "stopOptions" -> System.out.println("finalStep\nstopCountFlag\nallDiedFlag");
+
             default -> showLiveObjects();
         }
     }
 
     private void show(String thisChoise, String variable) {
         boolean flag = false;
-        int idBegin1 = 0, idBegin2, idEnd = Config.CONFIG.getliveObjectsCount() - 1;
+        int idBegin1 = 0, idBegin2, idEnd = CONFIG.getliveObjectsCount() - 1;
         if (variable.equals("all")) flag = true;
-        else if (Config.CONFIG.getLiveObjectTypeId(variable) > -1) {
-            idBegin1 = Config.CONFIG.getLiveObjectTypeId(variable);
+        else if (CONFIG.getLiveObjectTypeId(variable) > -1) {
+            idBegin1 = CONFIG.getLiveObjectTypeId(variable);
             idEnd = idBegin1;
             flag = true;
         }
         if (flag) {
             while (idBegin1 <= idEnd) {
                 switch (thisChoise) {
+
+                    case "stopOptions" -> {
+                        idBegin1 = idEnd;
+                        System.out.println("finalStep = " + CONFIG.getFinalStep() +
+                                "\nstopCountFlag = " + CONFIG.getStopOptions()[0] +
+                                "\nallDiedFlag = " + CONFIG.getStopOptions()[1]);
+                    }
 //                    case "objectsMaxCountsOnIsland" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getObjectsMaxCountOnIsland(idBegin1));
-                    case "objectsTypesNames" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getObjectTypeName(idBegin1));
-                    case "weights" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getWeight(idBegin1));
-                    case "objectsMaxCountsOnArea" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getObjectMaxCountOnArea(idBegin1));
-                    case "maxMoveSpeeds" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getMaxMoveSpeed(idBegin1));
-                    case "maxFoodInAnimals" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getMaxFoodInAnimal(idBegin1));
+                    case "objectsTypesNames" -> System.out.println(CONFIG.getLiveObjectsTypes(idBegin1) + " = " + CONFIG.getObjectTypeName(idBegin1));
+                    case "weights" -> System.out.println(CONFIG.getLiveObjectsTypes(idBegin1) + " = " + CONFIG.getWeight(idBegin1));
+                    case "objectsMaxCountsOnArea" -> System.out.println(CONFIG.getLiveObjectsTypes(idBegin1) + " = " + CONFIG.getObjectMaxCountOnArea(idBegin1));
+                    case "maxMoveSpeeds" -> System.out.println(CONFIG.getLiveObjectsTypes(idBegin1) + " = " + CONFIG.getMaxMoveSpeed(idBegin1));
+                    case "maxFoodInAnimals" -> System.out.println(CONFIG.getLiveObjectsTypes(idBegin1) + " = " + CONFIG.getMaxFoodInAnimal(idBegin1));
 //                    case "maxNumbersOfChilds" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getMaxNumberOfChild(idBegin1));
-                    case "breedingPeriods" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getBreedingPeriod(idBegin1));
+                    case "breedingPeriods" -> System.out.println(CONFIG.getLiveObjectsTypes(idBegin1) + " = " + CONFIG.getBreedingPeriod(idBegin1));
 //                    case "breedingPairFlags" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getBreedingPairFlag(idBegin1));
-                    case "starvingsInStep" -> System.out.println(Config.CONFIG.getLiveObjectsTypes(idBegin1) + " = " + Config.CONFIG.getStarvingInStep(idBegin1));
+                    case "starvingsInStep" -> System.out.println(CONFIG.getLiveObjectsTypes(idBegin1) + " = " + CONFIG.getStarvingInStep(idBegin1));
                     case "eatingProbabilities" -> {
                         for (idBegin2 = 0; idBegin2 <= idEnd; idBegin2++) {
                             System.out.println("probability " +
-                                    Config.CONFIG.getLiveObjectsTypes(idBegin1) + " eat " +
-                                    Config.CONFIG.getLiveObjectsTypes(idBegin2) + " = " +
-                                    Config.CONFIG.getEatingProbability(idBegin1, idBegin2) + "%");
+                                    CONFIG.getLiveObjectsTypes(idBegin1) + " eat " +
+                                    CONFIG.getLiveObjectsTypes(idBegin2) + " = " +
+                                    CONFIG.getEatingProbability(idBegin1, idBegin2) + "%");
                         }
                     }
                 }
                 idBegin1++;
             }
-        } else System.out.println("Параметр " + variable + " не распознан");
+        } else if (thisChoise.equals("stopOptions")) {
+            switch (thisChoise) {
+                case "stopOptions" -> {
+                    switch (variable) {
+                        case "all" -> System.out.println("finalStep = " + CONFIG.getFinalStep() +
+                                "\nstopCountFlag = " + CONFIG.getStopOptions()[0] +
+                                "\nallDiedFlag = " + CONFIG.getStopOptions()[1]);
+                        case "finalStep" -> System.out.println("finalStep = " + CONFIG.getFinalStep());
+                        case "stopCountFlag" -> System.out.println("stopCountFlag = " + CONFIG.getStopOptions()[0]);
+                        case "allDiedFlag" -> System.out.println("allDiedFlag = " + CONFIG.getStopOptions()[1]);
+                        default -> System.out.println("show(2).stopOptions:Параметр " + variable + " не распознан");
+                    }
+                }
+            }
+        } else System.out.println("show(2).all: Параметр " + variable + " не распознан");
     }
 
     private void show(String thisChoise, String variable1, String variable2) {
         int idBegin1 = 0, idBegin2 = 0, idEnd1 = 0, idEnd2 = 0;
 
         boolean flag = false;
-        if ((variable1.equals("each")) && (Config.CONFIG.getLiveObjectTypeId(variable2) > -1)) {
-            idEnd1 = Config.CONFIG.getliveObjectsCount() - 1;
-            idBegin2 = Config.CONFIG.getLiveObjectTypeId(variable2);
+        if ((variable1.equals("each")) && (CONFIG.getLiveObjectTypeId(variable2) > -1)) {
+            idEnd1 = CONFIG.getliveObjectsCount() - 1;
+            idBegin2 = CONFIG.getLiveObjectTypeId(variable2);
             idEnd2 = idBegin2;
             flag = true;
-        } else if ((variable2.equals("each")) && (Config.CONFIG.getLiveObjectTypeId(variable1) > -1)) {
-            idEnd2 = Config.CONFIG.getliveObjectsCount() - 1;
-            idBegin1 = Config.CONFIG.getLiveObjectTypeId(variable1);
+        } else if ((variable2.equals("each")) && (CONFIG.getLiveObjectTypeId(variable1) > -1)) {
+            idEnd2 = CONFIG.getliveObjectsCount() - 1;
+            idBegin1 = CONFIG.getLiveObjectTypeId(variable1);
             idEnd1 = idBegin1;
             flag = true;
-        } else if ((Config.CONFIG.getLiveObjectTypeId(variable1) > -1) && (Config.CONFIG.getLiveObjectTypeId(variable2) > -1)) {
-            idBegin1 = Config.CONFIG.getLiveObjectTypeId(variable1);
+        } else if ((CONFIG.getLiveObjectTypeId(variable1) > -1) && (CONFIG.getLiveObjectTypeId(variable2) > -1)) {
+            idBegin1 = CONFIG.getLiveObjectTypeId(variable1);
             idEnd1 = idBegin1;
-            idBegin2 = Config.CONFIG.getLiveObjectTypeId(variable2);
+            idBegin2 = CONFIG.getLiveObjectTypeId(variable2);
             idEnd2 = idBegin2;
             flag = true;
         }
@@ -700,9 +858,9 @@ public class Menu {
                 for (int j = idBegin2; j <= idEnd2; j++) {
                     switch (thisChoise) {
                         case "eatingProbabilities" -> System.out.println("probability " +
-                                Config.CONFIG.getLiveObjectsTypes(i) + " eat " +
-                                Config.CONFIG.getLiveObjectsTypes(j) + " = " +
-                                Config.CONFIG.getEatingProbability(i, j) + "%");
+                                CONFIG.getLiveObjectsTypes(i) + " eat " +
+                                CONFIG.getLiveObjectsTypes(j) + " = " +
+                                CONFIG.getEatingProbability(i, j) + "%");
                     }
                 }
             }
@@ -710,14 +868,17 @@ public class Menu {
     }
 
     private void showVariables() {
-        for (Field field : Config.CONFIG.getClass().getDeclaredFields()) {
-            if ((field.getModifiers() == Modifier.PRIVATE) && (!(field.getName().equals("liveObjectsTypes"))) && (!(field.getName().equals("objectsTypesPsevdographic")))&& (!(field.getName().equals("areaNamePrefix"))))
+        for (Field field : CONFIG.getClass().getDeclaredFields()) {
+            if ((field.getModifiers() == Modifier.PRIVATE) && (!(field.getName().equals("liveObjectsTypes"))) &&
+                    (!(field.getName().equals("objectsTypesPsevdographic"))) &&
+                    (!(field.getName().equals("areaNamePrefix"))) &&
+                    !(field.getName().equals("finalStep")))
                 System.out.println(field.getName());
         }
     }
 
     private void showLiveObjects() {
-        for (String valueOfLiveObjectsTypes : Config.CONFIG.getLiveObjectsTypes())
+        for (String valueOfLiveObjectsTypes : CONFIG.getLiveObjectsTypes())
             System.out.println(valueOfLiveObjectsTypes.toLowerCase());
     }
 

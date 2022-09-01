@@ -60,10 +60,9 @@ public class Area implements Runnable {
         this.objectsTypesNames = CONFIG.getObjectsTypesNames();
 
         //записываем соообщение о создании локации
-
-        synchronized (LOG) {
-            LOG.addToLog(areaName + " : локация создана");
-        }
+//        synchronized (LOG) {
+//            LOG.addToLog(areaName + " : локация создана");
+//        }
 
         //создаем изначальные популяции рандомом
         for (int liveObjectTypeId = 0; liveObjectTypeId < liveObjectsCount; liveObjectTypeId++) {
@@ -72,9 +71,9 @@ public class Area implements Runnable {
                 this.initialObjectsInAreaCounts[liveObjectTypeId] = objectsMaxCountsOnArea[liveObjectTypeId];
             for (int liveObject = 0; liveObject < initialObjectsInAreaCounts[liveObjectTypeId] - 1; liveObject++) {
                 createNewLiveObject(liveObjectTypeId, true);
-                synchronized (LOG) {
-                    LOG.addToLog(areaName + " : создан " + objectsInArea.get(liveObjectId).getObjectName());
-                }
+//                synchronized (LOG) {
+//                    LOG.addToLog(areaName + "\t: создан " + objectsInArea.get(liveObjectId).getObjectName());
+//                }
             }
         }
     }
@@ -82,6 +81,10 @@ public class Area implements Runnable {
 
     @Override
     public void run() {
+//        LOG.addToLog("какая-то фигня");
+        synchronized (this) {
+            ISLAND.appendFinishedAreas();
+        }
     }
 
     //предоставление текущей популяции в локации
@@ -139,7 +142,7 @@ public class Area implements Runnable {
     public void createNewLiveObject(int liveObjectTypeId, boolean initFlag) {
         if (isCreateAvaibleInArea(liveObjectTypeId)) {
             ISLAND.appendCountForName(liveObjectTypeId); //увеличиваем счетчик для именования
-            ISLAND.appendCurrentObjectsTotalCounts(liveObjectTypeId); //увеличиваем общую популяцию на острове
+//            ISLAND.appendCurrentObjectsTotalCounts(liveObjectTypeId); //увеличиваем общую популяцию на острове
             currentObjectsInAreaCounts[liveObjectTypeId]++;
             liveObjectId = objectsInArea.size();
             switch (liveObjectTypeId) {
