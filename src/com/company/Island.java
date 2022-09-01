@@ -110,7 +110,7 @@ public class Island implements Runnable {
         //собираем статистику по острову на основе статистик локаций (на этапе инициализации)
         for (int areaId = 0; areaId < areasTotalCount; areaId++)
             for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++)
-                currentObjectsTotalCounts[objectTypeId] += areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
+                currentObjectsTotalCounts[objectTypeId] = areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
 
         //выводим ход имитации
         LOG.addToLog("Ход имитации " + currentStep);
@@ -150,11 +150,11 @@ public class Island implements Runnable {
                     e.printStackTrace();
                 }
             }
-
+            System.out.println("Прошли");
             //собираем статистику по острову на основе статистик локаций (на этапе инициализации)
             for (int areaId = 0; areaId < areasTotalCount; areaId++)
                 for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++)
-                    currentObjectsTotalCounts[objectTypeId] += areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
+                    currentObjectsTotalCounts[objectTypeId] = areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
 
             //увеличиваем счетчик ходов
             currentStep++;
