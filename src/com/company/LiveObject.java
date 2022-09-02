@@ -78,7 +78,6 @@ public abstract class LiveObject implements Runnable {
 
     @Override
     public void run() {
-
     }
 
     public void toEaten() {

@@ -1,4 +1,7 @@
 package com.company;
+
+import static com.company.Island.ISLAND;
+
 // класс "Удав"
 // наследуется от класса "Животное" (Animal)
 // имплементирует интерфейс "Хищник"(Predator)
@@ -9,6 +12,6 @@ public class Boa extends Animal implements Predator{
 
     @Override
     public void run() {
-
+        ISLAND.areas.get(currentAreaId).appendFinishedObjects();
     }
 }

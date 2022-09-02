@@ -1,4 +1,7 @@
 package com.company;
+
+import static com.company.Island.ISLAND;
+
 // Класс "Кабан"
 // наследуется от класса "Животное" (Animal)
 // имплементирует интерфейс "Травоядное" (Herbivorous)
@@ -9,6 +12,6 @@ public class Boar extends Animal implements Herbivorous, Predator{
 
     @Override
     public void run() {
-
+        ISLAND.areas.get(currentAreaId).appendFinishedObjects();
     }
 }

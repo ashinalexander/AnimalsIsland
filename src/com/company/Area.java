@@ -1,6 +1,8 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.company.Config.CONFIG;
@@ -9,35 +11,43 @@ import static com.company.Log.LOG;
 import static java.lang.Thread.sleep;
 
 public class Area implements Runnable {
+    //общее количество локаций на островe
+    private final int areasTotalCount;
+
     // индекс локации (для доступа)
-    private int areaId;
+    final private int areaId;
     // координаты локации X и Y (для навигации животных)
-    private int areaX;
-    private int areaY;
+    final private int areaX;
+    final private int areaY;
     //наименование локации
-    private String areaName;
+    final private String areaName;
     //массив с макс значениями популяций в локации
-    private int[] objectsMaxCountsOnArea;
+    final private int[] objectsMaxCountsInArea;
     //массив с живыми объектами в локации
     ArrayList<LiveObject> objectsInArea;
-    //массив с потоками живых объектов в локации
-    ArrayList<Thread> objectsThreadsInArea;
+    //фабрика потоков
+    private ExecutorService oThreads;
     //массив с текущими популяциями объектов на локации (не ID) для проверки при создании и перемещении
     private int[] currentObjectsInAreaCounts;
     //массив с популяциями животных на локации при первичной инициализации (заполняется рандомом)
     private int[] initialObjectsInAreaCounts;
-    //индекс создаваемого объекта на локации
-    //используется для доступа к объекту в массиве
+    //Id создаваемого объекта в локации - используется для доступа к объекту в массиве
     private int liveObjectId;
-    private String[] objectsTypesNames;
+
+    final private String[] objectsTypesNames;
     //колличество видов объектов на острове
-    private int liveObjectsCount;
-    //флаг продолжения работы - следующий шаг
-    private boolean areaNextStep;
-    //флаг остановки потока локации
-    private boolean isShutdown;
+    final private int liveObjectsCount;
+    //текущее количество объектов, завершивших работу
+    long finishedObjects;
+    //количество объектов в локации перед запуском потоков
+    //используется для проверки, что все объекты отчитались о выполнении
+    private long totalObjectsInAreaCount;
+    //максимальное количество объектов в локации
+    private int totalMaxObjectsInAreaCount;
 
     Area(int areaId, int areaX, int areaY) {
+        //общее количество локаций на островe
+        this.areasTotalCount = ISLAND.getAreasTotalCount();
         // индекс локации (для доступа)
         this.areaId = areaId;
         // координаты локации X и Y (для навигации животных)
@@ -48,11 +58,13 @@ public class Area implements Runnable {
         //колличество видов объектов на острове
         this.liveObjectsCount = CONFIG.getliveObjectsCount();
         //массив с макс значениями популяций в локации
-        this.objectsMaxCountsOnArea = CONFIG.getObjectMaxCountOnArea();
+        this.objectsMaxCountsInArea = CONFIG.getObjectMaxCountOnArea();
+        ////максимальное количество объектов в локации
+        for (int objectMaxCountInArea: this.objectsMaxCountsInArea) {
+            this.totalMaxObjectsInAreaCount += objectMaxCountInArea;
+        }
         //массив с живыми объектами в локации
         this.objectsInArea = new ArrayList<>();
-        //массив с потоками живых объектов в локации
-        this.objectsThreadsInArea = new ArrayList<>();
         //массив с текущими популяциями объектов на локации (не ID) для проверки при создании и перемещении
         this.currentObjectsInAreaCounts = new int[CONFIG.getliveObjectsCount()];
         //массив с популяциями животных на локации при первичной инициализации (заполняется рандомом)
@@ -62,26 +74,19 @@ public class Area implements Runnable {
         this.liveObjectId = -1;
         //наименование типов животных и растений
         this.objectsTypesNames = CONFIG.getObjectsTypesNames();
-        //флаг продолжения работы - следующий шаг
-        areaNextStep = false;
-        //флаг остановки потока локации
-        isShutdown = false;
-
+        //фабрика потоков объектов
+        oThreads = Executors.newFixedThreadPool((45000-areasTotalCount)/areasTotalCount);
         //записываем соообщение о создании локации
-//        synchronized (LOG) {
-//            LOG.addToLog(areaName + " : локация создана");
-//        }
+        //LOG.addToLog(areaName + " : локация создана");
 
         //создаем изначальные популяции рандомом
         for (int liveObjectTypeId = 0; liveObjectTypeId < liveObjectsCount; liveObjectTypeId++) {
-            initialObjectsInAreaCounts[liveObjectTypeId] = ThreadLocalRandom.current().nextInt(0, objectsMaxCountsOnArea[liveObjectTypeId] + 1);
-            if ((initialObjectsInAreaCounts[liveObjectTypeId]) > objectsMaxCountsOnArea[liveObjectTypeId])
-                this.initialObjectsInAreaCounts[liveObjectTypeId] = objectsMaxCountsOnArea[liveObjectTypeId];
+            initialObjectsInAreaCounts[liveObjectTypeId] = ThreadLocalRandom.current().nextInt(0, objectsMaxCountsInArea[liveObjectTypeId] + 1);
+            if ((initialObjectsInAreaCounts[liveObjectTypeId]) > objectsMaxCountsInArea[liveObjectTypeId])
+                this.initialObjectsInAreaCounts[liveObjectTypeId] = objectsMaxCountsInArea[liveObjectTypeId];
             for (int liveObject = 0; liveObject < initialObjectsInAreaCounts[liveObjectTypeId] - 1; liveObject++) {
                 createNewLiveObject(liveObjectTypeId, true);
-//                synchronized (LOG) {
-//                    LOG.addToLog(areaName + "\t: создан " + objectsInArea.get(liveObjectId).getObjectName());
-//                }
+                //LOG.addToLog(areaName + "\t: создан " + objectsInArea.get(liveObjectId).getObjectName());
             }
         }
     }
@@ -89,52 +94,43 @@ public class Area implements Runnable {
 
     @Override
     public void run() {
-        //завершаем поток по команде от Island
-//         while(!isShutdown){
-             LOG.addToLog("что-то делаем");
+        totalObjectsInAreaCount = objectsInArea.size();
+        for (int liveObject = 0; liveObject < objectsInArea.size(); liveObject++)
+            oThreads.submit(objectsInArea.get(liveObject));
 
-
-
-             //выполнения всех действий итерации отчитываемся перед Island
-             ISLAND.appendFinishedAreas();
-             // ожидаем обратную связь с Island
-//             while(!areaNextStep){
-//
-//                 try {
-//                     Thread.sleep(100);
-//                 } catch (InterruptedException e) {
-//                     e.printStackTrace();
-//                 }
-                 //кавершаем поток по команде от Island
-//
-//             }
-//
-//         }
+            //ждем когда отработают все объекты
+            //если работают, то спим
+            while (finishedObjects < totalObjectsInAreaCount) {
+                try {
+                    Thread.sleep(this.totalObjectsInAreaCount/100000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+        }
+        //выполнения всех действий итерации отчитываемся перед Island
+        ISLAND.appendFinishedAreas();
     }
 
-//    public boolean shutdown() {
-//        return isShutdown=true;
-//    }
-//
-//    public boolean isAreaNextStep() {
-//        return areaNextStep = true;
-//    }
+    //инкремент текущего количества объектов, завершивших работу
+    public synchronized void appendFinishedObjects() {
+        this.finishedObjects++;
+    }
 
     //предоставление текущей популяции в локации
     //используется для проверок при создании нового объекта или перемещении
-    public int getCurrentObjectsInAreaCounts(int liveObjectTypeId) {
+    public synchronized int getCurrentObjectsInAreaCounts(int liveObjectTypeId) {
         return currentObjectsInAreaCounts[liveObjectTypeId];
     }
 
     //инкремент текущего значения популяции в локации
     //используется при создании нового объекта или перемещении
-    public void appendCurrentObjectsInAreaCount(int liveObjectTypeId) {
+    public synchronized void appendCurrentObjectsInAreaCount(int liveObjectTypeId) {
         this.currentObjectsInAreaCounts[liveObjectTypeId]++;
     }
 
     //декремент текущего значения популяции в локации
     //используется при удалении объекта или перемещении
-    public void subtractCurrentObjectsInAreaCount(int liveObjectTypeId) {
+    public synchronized void subtractCurrentObjectsInAreaCount(int liveObjectTypeId) {
         this.currentObjectsInAreaCounts[liveObjectTypeId]--;
     }
 
@@ -160,7 +156,7 @@ public class Area implements Runnable {
 
     //проверка на то, что макс. популяция для объекта в локации не достигнута
     public boolean isCreateAvaibleInArea(int liveObjectTyepId) {
-        if ((currentObjectsInAreaCounts[liveObjectTyepId] + 1) <= objectsMaxCountsOnArea[liveObjectTyepId])
+        if ((currentObjectsInAreaCounts[liveObjectTyepId] + 1) <= objectsMaxCountsInArea[liveObjectTyepId])
             return true;
         else {
             //записываем соообщение в лог
@@ -170,11 +166,11 @@ public class Area implements Runnable {
     }
 
     //создание нового объекта
-    public void createNewLiveObject(int liveObjectTypeId, boolean initFlag) {
+    public synchronized void createNewLiveObject(int liveObjectTypeId, boolean initFlag) {
         if (isCreateAvaibleInArea(liveObjectTypeId)) {
             ISLAND.appendCountForName(liveObjectTypeId); //увеличиваем счетчик для именования
 //            ISLAND.appendCurrentObjectsTotalCounts(liveObjectTypeId); //увеличиваем общую популяцию на острове
-            currentObjectsInAreaCounts[liveObjectTypeId]++;
+            appendCurrentObjectsInAreaCount(liveObjectTypeId);
             liveObjectId = objectsInArea.size();
             switch (liveObjectTypeId) {
                 case 0 -> objectsInArea.add(new Plant(areaId, liveObjectId, initFlag));
@@ -194,8 +190,11 @@ public class Area implements Runnable {
                 case 14 -> objectsInArea.add(new Duck(areaId, liveObjectId, initFlag));
                 case 15 -> objectsInArea.add(new Caterpillar(areaId, liveObjectId, initFlag));
             }
-            objectsThreadsInArea.add(new Thread(objectsInArea.get(liveObjectId)));
         }
+    }
+
+    public synchronized void shutdown(){
+        oThreads.shutdownNow();
     }
 }
 

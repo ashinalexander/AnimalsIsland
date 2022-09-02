@@ -15,6 +15,7 @@ public class Island implements Runnable {
     public static final Island ISLAND = new Island();
     // количество локаций на острове (в массиве [x,y])
     private final int[] areasCount;
+
     //общее количество локаций на островe
     private final int areasTotalCount;
     // типы объектов животных и растений
@@ -34,13 +35,13 @@ public class Island implements Runnable {
     //индекс создаваемой зоны
     private int areaId;
     //текущее количество объектов на острове (не индекс)
-    private int[] currentObjectsTotalCounts;
+    private long[] currentObjectsTotalCounts;
     //общее количество когда-либо созданных объектов по типам - для именования объектов (не индекс)
-    private int[] countsForNames;
+    private long[] countsForNames;
     //колличество видов объектов на острове
     private int liveObjectsCount;
     //пул потоков
-    ExecutorService aThreads;
+    private ExecutorService aThreads;
     //строка для сбора статистики по острову
     private String islandStat;
     //строка для сбора статистики по локациям
@@ -50,7 +51,7 @@ public class Island implements Runnable {
     //колличество локаций, завершивших ход
     private int finishedAreas;
     //количество зверей на острове используется для проверки на вымирание
-    int animalPopulationCountOnIsland;
+    private long animalPopulationCountOnIsland;
 
     public static Island getInstance() {
         return ISLAND;
@@ -62,17 +63,19 @@ public class Island implements Runnable {
         //колличество видов объектов на острове
         this.liveObjectsCount = CONFIG.getliveObjectsCount();
         //текущее количество объектов на острове (не индекс)
-        this.currentObjectsTotalCounts = new int[liveObjectsCount];
+        this.currentObjectsTotalCounts = new long[liveObjectsCount];
         //общее количество когда-либо созданных объектов по типам - для именования объектов (не индекс)
-        this.countsForNames = new int[liveObjectsCount];
+        this.countsForNames = new long[liveObjectsCount];
         //наименование типов животных и растений
         this.objectsTypesNames = CONFIG.getObjectsTypesNames();
         // количество локаций на острове в массиве [x,y]
         this.areasCount = CONFIG.getAreasCount();
+        //общее количество локаций на островe
+        this.areasTotalCount = areasCount[0] * areasCount[1];
         //массив для локаций
-        this.areas = new ArrayList<>(6000);
-//        //массив для потоков локаций
-//        this.areasThreds = new ArrayList<>();
+        this.areas = new ArrayList<>(this.areasTotalCount);
+        //пул потоков
+        this.aThreads = Executors.newFixedThreadPool(this.areasTotalCount);
         //аналог хода игры (может изменяться в зависимости от условий выхода)
         step = 0;
         //текущий ход игры для вывода на экран
@@ -83,15 +86,12 @@ public class Island implements Runnable {
         finalStep = CONFIG.getFinalStep();
         //индекс локации (для доступа)
         this.areaId = -1;
-        //пул потоков
-        this.aThreads = Executors.newSingleThreadExecutor();
         //Cтроки для статистики
         this.islandStat = new String();
         this.areasStat = new String();
         //флаги остановки имитации stopIslandFlags[0] -остановка по ходу, stopIslandFlags[1] -остановка по вымиранию
         this.stopIslandFlags = CONFIG.getStopOptions();
-        //общее количество локаций на островe
-        this.areasTotalCount = areasCount[0] * areasCount[1];
+
     }
 
     @Override
@@ -110,7 +110,7 @@ public class Island implements Runnable {
         //собираем статистику по острову на основе статистик локаций (на этапе инициализации)
         for (int areaId = 0; areaId < areasTotalCount; areaId++)
             for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++)
-                currentObjectsTotalCounts[objectTypeId] = areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
+                currentObjectsTotalCounts[objectTypeId] += areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
 
         //выводим ход имитации
         LOG.addToLog("НАЧАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ");
@@ -122,13 +122,13 @@ public class Island implements Runnable {
         LOG.addToLog(islandStat);
 
         //собираем статистику по локациям в строку и выводим на экран
-        for (int areaId = 0; areaId < areasTotalCount; areaId++) {
-            areasStat = areas.get(areaId).getAreaName() + "\t:";
-            for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++) {
-                areasStat = areasStat + objectsTypesNames[objectTypeId] + " " + areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId) + "\t\t";
-            }
-            LOG.addToLog(areasStat);
-        }
+//        for (int areaId = 0; areaId < areasTotalCount; areaId++) {
+//            areasStat = areas.get(areaId).getAreaName() + "\t:";
+//            for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++) {
+//                areasStat = areasStat + objectsTypesNames[objectTypeId] + " " + areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId) + "\t\t";
+//            }
+//            LOG.addToLog(areasStat);
+//        }
 
         // НАЧАЛО ЦИКЛА
         //stopIslandFlags[0] - флаг остановки по количеству шагов
@@ -145,15 +145,18 @@ public class Island implements Runnable {
             //если работают, то спим
             while (finishedAreas < areasTotalCount) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(areasTotalCount/1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            //собираем статистику по острову на основе статистик локаций (на этапе инициализации)
+            for (int i = 0; i < liveObjectsCount; i++) {
+                currentObjectsTotalCounts[i] = 0;
+            }
+            //собираем статистику по острову на основе статистик локаций (на этапе имитации)
             for (int areaId = 0; areaId < areasTotalCount; areaId++)
                 for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++)
-                    currentObjectsTotalCounts[objectTypeId] = areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
+                    currentObjectsTotalCounts[objectTypeId] += areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId);
 
             //увеличиваем счетчик ходов
             currentStep++;
@@ -167,25 +170,30 @@ public class Island implements Runnable {
             }
 
             //выводим ход имитации
-            LOG.addToLog("ХОД ИМИТАЦИИ " + currentStep);
+//            LOG.addToLog("ХОД " + currentStep);
 
             //собираем статистику по острову в строку и выводим на экран (в конце каждого шага)
-            islandStat = "Island\t\t:";
+            islandStat = "ХОД " + currentStep + "\t\t:";
             for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++)
                 islandStat = islandStat + objectsTypesNames[objectTypeId] + " " + currentObjectsTotalCounts[objectTypeId] + "\t\t";
             LOG.addToLog(islandStat);
 
-            //собираем статистику по локациям в строку и выводим на экран (в конце каждого шага)
-            for (int areaId = 0; areaId < areasTotalCount; areaId++) {
-                areasStat = areas.get(areaId).getAreaName() + "\t:";
-                for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++) {
-                    areasStat = areasStat + objectsTypesNames[objectTypeId] + " " + areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId) + "\t\t";
-                }
-                LOG.addToLog(areasStat);
-            }
+//            собираем статистику по локациям в строку и выводим на экран (в конце каждого шага)
+//            for (int areaId = 0; areaId < areasTotalCount; areaId++) {
+//                areasStat = areas.get(areaId).getAreaName() + "\t:";
+//                for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++) {
+//                    areasStat = areasStat + objectsTypesNames[objectTypeId] + " " + areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId) + "\t\t\t";
+//                }
+//                LOG.addToLog(areasStat);
+//            }
 
         }
-        //завершаем работу фабрик острова
+        //завершаем работу фабрик объектов в локациях
+        for (Area area:
+             areas) {
+            area.shutdown();
+        }
+        //завершаем работу фабрики потоков локаций
         aThreads.shutdownNow();
         //завершаем работу лога
         LOG.shutdown();
@@ -210,7 +218,7 @@ public class Island implements Runnable {
 
     //получение общего числа созданных объектов определенного типа на острове по id
     //используется для именования создаваемых объектов
-    public synchronized int getCountForName(int liveObjectTypeId) {
+    public synchronized long getCountForName(int liveObjectTypeId) {
         return countsForNames[liveObjectTypeId];
     }
 
@@ -218,5 +226,10 @@ public class Island implements Runnable {
     //используется для именования создаваемых объектов
     public synchronized void appendCountForName(int liveObjectTypeId) {
         this.countsForNames[liveObjectTypeId]++;
+    }
+
+    //предоставленеие количества локаций в Area для вычисления количества создаваемых потоков объектов
+    public int getAreasTotalCount() {
+        return areasTotalCount;
     }
 }
