@@ -9,10 +9,5 @@ public class Bear extends Animal implements Predator {
     public Bear(int areaId, int currentliveObjectId, boolean initFlag) {
         super(areaId, currentliveObjectId, initFlag);
     }
-
-       public void run() {
-       }
-//        ISLAND.getArea(currentAreaId).appendFinishedObjects();
-//    }
 }
 

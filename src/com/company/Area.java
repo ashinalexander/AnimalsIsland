@@ -84,7 +84,7 @@ public class Area implements Runnable {
             initialObjectsInAreaCounts[liveObjectTypeId] = ThreadLocalRandom.current().nextInt(0, objectsMaxCountsInArea[liveObjectTypeId] + 1);
             if ((initialObjectsInAreaCounts[liveObjectTypeId]) > objectsMaxCountsInArea[liveObjectTypeId])
                 this.initialObjectsInAreaCounts[liveObjectTypeId] = objectsMaxCountsInArea[liveObjectTypeId];
-            for (int liveObject = 0; liveObject < initialObjectsInAreaCounts[liveObjectTypeId] - 1; liveObject++) {
+            for (int liveObject = 0; liveObject < initialObjectsInAreaCounts[liveObjectTypeId]; liveObject++) {
                 createObject(liveObjectTypeId, true);
                 //LOG.addToLog(areaName + "\t: создан " + objectsInArea.get(liveObjectId).getObjectName());
             }
@@ -93,10 +93,9 @@ public class Area implements Runnable {
 
     @Override
     public void run() {
-        finishedObjects = 0;
         totalObjectsInAreaCount = objectsInArea.size();
 //        LOG.addToLog(ISLAND.currentStep + " " + areaName + " " + finishedObjects + " " + totalObjectsInAreaCount);
-        for (int liveObject = 0; liveObject < totalObjectsInAreaCount; liveObject++)
+        for (int liveObject = 0; liveObject < objectsInArea.size(); liveObject++)
 //            oThreads.submit(objectsInArea.get(liveObject));
 
             objectsInArea.get(liveObject).run();
@@ -205,18 +204,19 @@ public class Area implements Runnable {
     }
 //??????????????????????????????????????????????????????????????????????????????????????????????
     //перемещение объекта из одной локации в другую
+
     public void moveObject(int currentliveObjectId, int fromAreaId, int toAreaId) {
         ISLAND.getArea(toAreaId).appendCurrentObjectsInAreaCount(ISLAND.
-                getArea(fromAreaId).objectsInArea.get(liveObjectId).getLiveObjectTypeId());
+                getArea(fromAreaId).objectsInArea.get(currentliveObjectId).getLiveObjectTypeId());
         liveObjectId = this.objectsInArea.size();
-        ISLAND.getArea(toAreaId).objectsInArea.add(ISLAND.getArea(fromAreaId).getObject(liveObjectId));
-
+        ISLAND.getArea(toAreaId).objectsInArea.add(ISLAND.getArea(fromAreaId).getObject(currentliveObjectId));
+        ISLAND.getArea(toAreaId).objectsInArea.get(liveObjectId).setCurrentLiveObjectId(liveObjectId);
+        ISLAND.getArea(toAreaId).objectsInArea.get(liveObjectId).setCurrentAreaId(toAreaId);
+        ISLAND.getArea(fromAreaId).deleteObject(currentliveObjectId);
     }
 //?????????????????????????????????????????????????????????????????????????????????????????????
     //удаление объекта
     public synchronized void deleteObject(int liveObjectId) {
-//        synchronized (objectsInArea) {
-//            synchronized (currentObjectsInAreaCounts) {
         //уменьшаем значение текущей популяции в локации
         subtractCurrentObjectsInAreaCount(objectsInArea.get(liveObjectId).getLiveObjectTypeId());
         //удаление элемента из массива

@@ -9,9 +9,4 @@ public class Boa extends Animal implements Predator{
     public Boa(int areaId, int currentliveObjectId, boolean initFlag) {
         super(areaId, currentliveObjectId, initFlag);
     }
-
-    @Override
-    public void run() {
-//        ISLAND.getArea(currentAreaId).appendFinishedObjects();
-    }
 }

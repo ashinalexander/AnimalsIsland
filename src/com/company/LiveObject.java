@@ -29,9 +29,6 @@ public abstract class LiveObject implements Runnable {
     protected int[] areasCount;
     //идентификатор локации в которой находится объект
     protected int currentAreaId;
-    //координаты локации в которой находится объект
-    protected int currentAreaX;
-    protected int currentAreaY;
     //флаг инициализации (выставляется при создании объекта)
     protected boolean initFlag;
     //флаг того, что объект был съеден
@@ -132,5 +129,7 @@ public abstract class LiveObject implements Runnable {
         return moveFlag;
     }
 
-
+    public void setCurrentAreaId(int currentAreaId) {
+        this.currentAreaId = currentAreaId;
+    }
 }

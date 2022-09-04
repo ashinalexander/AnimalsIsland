@@ -35,7 +35,8 @@ public class Config implements Serializable {
     // веса животных и растений
     private double[] weights = {1, 50, 15, 8, 500, 6, 400, 300, 2, 0.05, 60, 70, 400, 700, 1, 0.01};
     // максимального количества каждого типа в локации
-    private int[] objectsMaxCountsOnArea = {200, 30, 30, 30, 5, 20, 20, 20, 150, 500, 140, 140, 50, 10, 200, 1000};
+    private int[] objectsMaxCountsOnArea = {0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+//    private int[] objectsMaxCountsOnArea = {200, 30, 30, 30, 5, 20, 20, 20, 150, 500, 140, 140, 50, 10, 200, 1000};
     //    //массив значений максимального количества каждого типа на острове
 //    private int[] objectsMaxCountsOnIsland = {areasCount[0]*areasCount[1]*objectsMaxCountsOnArea[0],
 //            areasCount[0]*areasCount[1]*objectsMaxCountsOnArea[1],

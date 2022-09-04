@@ -119,13 +119,13 @@ public class Island implements Runnable {
         LOG.addToLog(islandStat);
 
         //собираем статистику по локациям в строку и выводим на экран
-//        for (int areaId = 0; areaId < areasTotalCount; areaId++) {
-//            areasStat = areas.get(areaId).getAreaName() + "\t:";
-//            for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++) {
-//                areasStat = areasStat + objectsTypesNames[objectTypeId] + " " + areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId) + "\t\t";
-//            }
-//            LOG.addToLog(areasStat);
-//        }
+        for (int areaId = 0; areaId < areasTotalCount; areaId++) {
+            areasStat = areas.get(areaId).getAreaName() + "\t:";
+            for (int objectTypeId = 0; objectTypeId < liveObjectsCount; objectTypeId++) {
+                areasStat = areasStat + objectsTypesNames[objectTypeId] + " " + areas.get(areaId).getCurrentObjectsInAreaCounts(objectTypeId) + "\t\t";
+            }
+            LOG.addToLog(areasStat);
+        }
 
         // НАЧАЛО ЦИКЛА
         //stopIslandFlags[0] - флаг остановки по количеству шагов
