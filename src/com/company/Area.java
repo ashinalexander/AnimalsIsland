@@ -239,7 +239,11 @@ public class Area implements Runnable {
         return objectsInArea.get(liveObjectId);
     }
 
-//    public synchronized void shutdown() {
+    public int getObjectsMaxCountsInArea(int liveObjectTypeId) {
+        return this.objectsMaxCountsInArea[liveObjectTypeId];
+    }
+
+    //    public synchronized void shutdown() {
 //        oThreads.shutdownNow();
 //    }
 

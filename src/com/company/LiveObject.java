@@ -84,6 +84,7 @@ public abstract class LiveObject implements Runnable {
     protected void breed() {
         ISLAND.getArea(currentAreaId).createObject(liveObjectTypeId, false);
 //        System.out.println(objectName + " : Создал новый объект");
+        this.breedingPeriod = 0;
     }
 
     //быть съеденным

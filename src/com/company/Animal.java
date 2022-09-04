@@ -163,6 +163,7 @@ public abstract class Animal extends LiveObject {
         if ((areasCount[0] != 0) || (areasCount[1] != 0)) {
             this.goingFlag = true;
             this.avaibleActions.add("going");
+
         }
     }
 
@@ -187,7 +188,9 @@ public abstract class Animal extends LiveObject {
                         for (int x = 0; x < this.areasCount[0]; x++) {
                             tmpAreaID++;
                             if ((x == this.currentAreaX - 1) && (y == this.currentAreaY))
-                                this.futureAreaId = tmpAreaID;
+                                if (ISLAND.getArea(tmpAreaID).getCurrentObjectsInAreaCounts(liveObjectTypeId) <
+                                        ISLAND.getArea(tmpAreaID).getObjectsMaxCountsInArea(liveObjectTypeId))
+                                    this.futureAreaId = tmpAreaID;
                         }
                 }
                 case "rigth" -> {
@@ -195,7 +198,9 @@ public abstract class Animal extends LiveObject {
                         for (int x = 0; x < this.areasCount[0]; x++) {
                             tmpAreaID++;
                             if ((x == this.currentAreaX + 1) && (y == this.currentAreaY))
-                                this.futureAreaId = tmpAreaID;
+                                if (ISLAND.getArea(tmpAreaID).getCurrentObjectsInAreaCounts(liveObjectTypeId) <
+                                        ISLAND.getArea(tmpAreaID).getObjectsMaxCountsInArea(liveObjectTypeId))
+                                    this.futureAreaId = tmpAreaID;
                         }
                 }
                 case "up" -> {
@@ -203,7 +208,9 @@ public abstract class Animal extends LiveObject {
                         for (int x = 0; x < this.areasCount[0]; x++) {
                             tmpAreaID++;
                             if ((x == this.currentAreaX) && (y == this.currentAreaY - 1))
-                                this.futureAreaId = tmpAreaID;
+                                if (ISLAND.getArea(tmpAreaID).getCurrentObjectsInAreaCounts(liveObjectTypeId) <
+                                        ISLAND.getArea(tmpAreaID).getObjectsMaxCountsInArea(liveObjectTypeId))
+                                    this.futureAreaId = tmpAreaID;
                         }
                 }
                 case "down" -> {
@@ -212,6 +219,9 @@ public abstract class Animal extends LiveObject {
                             tmpAreaID++;
                             if ((x == this.currentAreaX) && (y == this.currentAreaY + 1))
                                 this.futureAreaId = tmpAreaID;
+                                if (ISLAND.getArea(tmpAreaID).getCurrentObjectsInAreaCounts(liveObjectTypeId) <
+                                        ISLAND.getArea(tmpAreaID).getObjectsMaxCountsInArea(liveObjectTypeId))
+                                    this.futureAreaId = tmpAreaID;
                         }
                 }
             }
