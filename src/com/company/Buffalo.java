@@ -6,12 +6,12 @@ import static com.company.Island.ISLAND;
 // наследуется от класса "Животное" (Animal)
 // имплементирует интерфейс "Травоядное" (Herbivorous)
 public class Buffalo extends Animal implements Herbivorous{
-    public Buffalo(int areaId, int currentAreaId, boolean initFlag) {
-        super(areaId, currentAreaId, initFlag);
+    public Buffalo(int areaId, int currentliveObjectId, boolean initFlag) {
+        super(areaId, currentliveObjectId, initFlag);
     }
 
     @Override
     public void run() {
-        ISLAND.areas.get(currentAreaId).appendFinishedObjects();
+//        ISLAND.getArea(currentAreaId).appendFinishedObjects();
     }
 }

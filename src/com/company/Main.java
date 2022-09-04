@@ -13,7 +13,7 @@ public class Main {
         Config.loadConfig(); //загрузка конфига из файла
         Menu menu = new Menu();
         Thread island = new Thread(Island.getInstance()); //создаем поток острова и сам остров
-        island.start(); //активируем работу острова
+        island.run(); //активируем работу острова
         try {
             island.join(); //дожидаемся окончания работы острова
         } catch (InterruptedException e) {

@@ -6,12 +6,12 @@ import static com.company.Island.ISLAND;
 // наследуется от класса "Животное" (Animal)
 // имплементирует интерфейсы "Травоядное" (Herbivorous) и "Хищник"(Predator)
 public class Duck extends Animal implements Herbivorous, Predator{
-    public Duck(int areaId, int currentAreaId, boolean initFlag) {
-        super(areaId, currentAreaId, initFlag);
+    public Duck(int areaId, int currentliveObjectId, boolean initFlag) {
+        super(areaId, currentliveObjectId, initFlag);
     }
 
     @Override
     public void run() {
-        ISLAND.areas.get(currentAreaId).appendFinishedObjects();
+//        ISLAND.getArea(currentAreaId).appendFinishedObjects();
     }
 }

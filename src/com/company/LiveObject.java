@@ -1,7 +1,7 @@
 package com.company;
 
-//import static com.company.Island.ISLAND;
-
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.company.Config.CONFIG;
@@ -32,9 +32,15 @@ public abstract class LiveObject implements Runnable {
     //координаты локации в которой находится объект
     protected int currentAreaX;
     protected int currentAreaY;
-
     //флаг инициализации (выставляется при создании объекта)
-    boolean initFlag;
+    protected boolean initFlag;
+    //флаг того, что объект был съеден
+    protected boolean wasEaten;
+    //идентификатор объекта, который съел
+    protected int killerId;
+    //флаг того, что объект должен быть удален
+    protected boolean deleteFlag;
+    protected boolean moveFlag;
 
     public LiveObject(int areaId, int currentliveObjectId, boolean initFlag) {
         //идентификатор типа объекта (животного или растения)
@@ -51,38 +57,46 @@ public abstract class LiveObject implements Runnable {
         this.breedingPeriod = CONFIG.getBreedingPeriod(this.liveObjectTypeId);
         // количество локаций на острове в массиве [x,y]
         this.areasCount = CONFIG.getAreasCount();
-
         //id в массиве текущей локации (для доступа к объекту)
-        this.currentLiveObjectId = currentLiveObjectId;
+        this.currentLiveObjectId = currentliveObjectId;
         //идентификатор локации в которой находится объект
         this.currentAreaId = areaId;
-        int tmpAreaID = -1;
-        for (int x = 0; x < areasCount[0]; x++) {
-            for (int y = 0; y < areasCount[1]; y++) {
-                tmpAreaID++;
-                if (tmpAreaID == this.currentAreaId) {
-                    this.currentAreaX = x;
-                    this.currentAreaY = y;
-                }
-            }
-        }
         //флаг того, объект создается при инициализации или нет
         this.initFlag = initFlag;
-        //если объект создан при инициализации, то у него период размножения будет задан случайно
-        if (initFlag == true)
+        //если объект создан при инициализации, то у него период размножения будет задана случайно
+        Random random = new Random();
+        if (initFlag == true) {
             this.currentBreedingPeriod = ThreadLocalRandom.current().
                     nextInt(0, CONFIG.getBreedingPeriod(this.liveObjectTypeId) + 1);
-        else
+        } else {
             this.currentBreedingPeriod = 0;
+        }
+        //флаг того, что объект был съеден
+        this.wasEaten = false;
+        //флаг того, что объект должен быть удален
+        this.deleteFlag = false;
     }
 
-    @Override
-    public void run() {
+    protected LiveObject() {
     }
 
-    public void toEaten() {
+    //размножаться
+    protected void breed() {
+        ISLAND.getArea(currentAreaId).createObject(liveObjectTypeId, false);
+//        System.out.println(objectName + " : Создал новый объект");
+    }
 
-        // "Быть съеденным"
+    //быть съеденным
+    public void beEaten(int killerId) {
+        if (wasEaten) {
+            //сообщение о том, что съели
+            LOG.addToLog(objectName + " : был съеден объектом " + ISLAND.getArea(currentAreaId).getObject(killerId));
+            deleteFlag = true;
+        }
+    }
+
+    public boolean isDeleteFlag() {
+        return deleteFlag;
     }
 
     public int getLiveObjectTypeId() {
@@ -108,4 +122,14 @@ public abstract class LiveObject implements Runnable {
     public String getObjectName() {
         return objectName;
     }
+
+    public void setCurrentLiveObjectId(int currentLiveObjectId) {
+        this.currentLiveObjectId = currentLiveObjectId;
+    }
+
+    public boolean isMoveFlag() {
+        return moveFlag;
+    }
+
+
 }

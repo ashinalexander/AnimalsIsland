@@ -157,6 +157,10 @@ public class Config implements Serializable {
         this.maxFoodInAnimals[liveObjectTypeId] = maxFoodInAnimal;
     }
 
+    public int[] getEatingProbability(int liveObject1TypeId) {
+        return eatingProbabilities[liveObject1TypeId];
+    }
+
     public int getEatingProbability(int liveObject1TypeId, int liveObject2TypeId) {
         return eatingProbabilities[liveObject1TypeId][liveObject2TypeId];
     }

@@ -10,6 +10,11 @@ public class Plant extends LiveObject {
 
     @Override
     public void run() {
-        ISLAND.areas.get(currentAreaId).appendFinishedObjects();
+        if (this.deleteFlag) return;
+        //перед очередным ходом увеличиваем количество ходов с момента размножения
+        //первым будет значение хода = 1
+        this.currentBreedingPeriod++;
+        //проверки на действия
+        if (this.currentBreedingPeriod >= this.breedingPeriod) breed();
     }
 }

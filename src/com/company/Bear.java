@@ -6,13 +6,13 @@ import static com.company.Island.ISLAND;
 // наследуется от класса "Животное" (Animal)
 // имплементирует интерфейс "Хищник"(Predator)
 public class Bear extends Animal implements Predator {
-    public Bear(int areaId, int currentAreaId, boolean initFlag) {
-        super(areaId, currentAreaId, initFlag);
+    public Bear(int areaId, int currentliveObjectId, boolean initFlag) {
+        super(areaId, currentliveObjectId, initFlag);
     }
 
-    @Override
-    public void run() {
-        ISLAND.areas.get(currentAreaId).appendFinishedObjects();
-    }
+       public void run() {
+       }
+//        ISLAND.getArea(currentAreaId).appendFinishedObjects();
+//    }
 }
 
